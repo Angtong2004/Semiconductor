@@ -1,0 +1,6 @@
+Model,Accuracy,Balanced Acc,Macro Precision,Macro Recall,Macro F1,Weighted F1,ROC-AUC (OvR)
+RandomForest,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+XGBoost,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+SupportVectorMachine,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+LogisticRegression,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+MLP_NeuralNet,0.999,0.9976,0.9998,0.9976,0.9987,0.999,1.0
