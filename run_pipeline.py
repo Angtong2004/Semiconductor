@@ -98,7 +98,7 @@ def run_defect_classification_pipeline(
     # Identify champion model
     champion_name = leaderboard.iloc[0]["Model"]
     champion_res = detailed_results[champion_name]
-    print(f"\n🏆 Champion Model: {champion_name} (Macro F1 = {champion_res['f1_macro']:.4f}, Accuracy = {champion_res['accuracy']:.4f})")
+    print(f"\n[CHAMPION MODEL] {champion_name} (Macro F1 = {champion_res['f1_macro']:.4f}, Accuracy = {champion_res['accuracy']:.4f})")
 
     # Save champion model
     champion_model_path = f"outputs/models/champion_model_{champion_name}.joblib"

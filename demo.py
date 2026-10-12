@@ -44,16 +44,16 @@ def test_die(sample_name: str, metrology_data: dict, model, prep):
     confidence = probs[pred_id] * 100.0
 
     print("\n" + "=" * 70)
-    print(f"🔬 INSPECTING SAMPLE: {sample_name}")
+    print(f"SAMPLE: {sample_name}")
     print("=" * 70)
     print("Metrology Measurements (from CeNSE Characterization Tools):")
-    print(f"  • Spectroscopic Ellipsometry : Film Thickness = {metrology_data['film_thickness_nm']} nm (Target: 100 nm)")
-    print(f"  • AFM Topography             : Roughness Rz = {metrology_data['roughness_rz_nm']} nm, Skewness = {metrology_data['surface_skewness']}")
-    print(f"  • Four-Point Probe Metrology : Sheet Resistance = {metrology_data['sheet_resistance_ohm_sq']} Ω/□ (Target: ~25 Ω/□)")
-    print(f"  • CD-SEM Inspection          : CD Bias = {metrology_data['cd_bias_nm']} nm")
+    print(f"  - Spectroscopic Ellipsometry : Film Thickness = {metrology_data['film_thickness_nm']} nm (Target: 100 nm)")
+    print(f"  - AFM Topography             : Roughness Rz = {metrology_data['roughness_rz_nm']} nm, Skewness = {metrology_data['surface_skewness']}")
+    print(f"  - Four-Point Probe Metrology : Sheet Resistance = {metrology_data['sheet_resistance_ohm_sq']} Ohm/sq (Target: ~25 Ohm/sq)")
+    print(f"  - CD-SEM Inspection          : CD Bias = {metrology_data['cd_bias_nm']} nm")
     print("-" * 70)
-    print(f"🤖 ML MODEL PREDICTION       : {pred_name} (Confidence: {confidence:.1f}%)")
-    print(f"🛠️  FABRICATION ROOT CAUSE    : {DEFECT_DESCRIPTIONS[pred_name]}")
+    print(f"Predicted Defect Class        : {pred_name} (Confidence: {confidence:.1f}%)")
+    print(f"Cleanroom Root Cause          : {DEFECT_DESCRIPTIONS[pred_name]}")
     print("=" * 70)
 
 
@@ -165,11 +165,11 @@ def main():
     for name, sample_data in scenarios:
         test_die(name, sample_data, model, prep)
 
-    print("\n✅ Demo finished. Total execution time: < 2 seconds.")
-    print("📁 Visual figures ready to show teacher in: outputs/figures/")
-    print("   1. wafer_defect_map.png (300mm wafer map)")
-    print("   2. feature_importance.png (Metrology feature rankings)")
-    print("   3. confusion_matrix.png (Model classification accuracy)")
+    print("\n[INFO] Demo complete. Execution time: < 2 seconds.")
+    print("Visual figures saved in directory: outputs/figures/")
+    print("  1. wafer_defect_map.png (300mm wafer map)")
+    print("  2. feature_importance.png (Metrology feature rankings)")
+    print("  3. confusion_matrix.png (Model classification accuracy)")
 
 
 if __name__ == "__main__":

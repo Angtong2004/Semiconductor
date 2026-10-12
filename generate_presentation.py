@@ -152,7 +152,7 @@ def create_pptx(output_path: str = "outputs/presentation.pptx"):
     ]
     for d_name, d_desc in defect_cards:
         p_t = tf2_r.add_paragraph()
-        p_t.text = f"✔ {d_name}"
+        p_t.text = f"- {d_name}"
         p_t.font.bold = True
         p_t.font.size = Pt(11)
         p_t.font.color.rgb = C_DARK
@@ -187,7 +187,7 @@ def create_pptx(output_path: str = "outputs/presentation.pptx"):
     ]
     for m_t, m_d in modalities:
         p_t = tf3_m.add_paragraph()
-        p_t.text = f"🔹 {m_t}"
+        p_t.text = f"• {m_t}"
         p_t.font.bold = True
         p_t.font.size = Pt(12)
         p_t.font.color.rgb = C_DARK
@@ -260,11 +260,11 @@ def create_pptx(output_path: str = "outputs/presentation.pptx"):
     p.font.color.rgb = C_BLUE
 
     results_text = [
-        ("🏆 Random Forest (Champion)", "Accuracy: 100.0% | Macro F1: 1.0000 | ROC-AUC: 1.0000\nBest overall robustness, zero false alarms on nominal dies."),
-        ("⚡ XGBoost Classifier", "Accuracy: 100.0% | Macro F1: 1.0000 | ROC-AUC: 1.0000\nGradient boosting captures subtle non-linear edge boundaries."),
-        ("🛡️ Support Vector Machine (RBF)", "Accuracy: 100.0% | Macro F1: 1.0000 | ROC-AUC: 1.0000\nEffective hyper-plane margin separation across scaled features."),
-        ("🧠 MLP Deep Neural Network", "Accuracy: 99.9% | Macro F1: 0.9987 | ROC-AUC: 1.0000\nHigh representation power, slight convergence sensitivity."),
-        ("📊 Calibrated Baseline (LogReg)", "Accuracy: 100.0% | Macro F1: 1.0000 | ROC-AUC: 1.0000\nLinear separation baseline confirms feature quality.")
+        ("1. Random Forest (Champion)", "Accuracy: 100.0% | Macro F1: 1.0000 | ROC-AUC: 1.0000\nBest overall robustness, zero false alarms on nominal dies."),
+        ("2. XGBoost Classifier", "Accuracy: 100.0% | Macro F1: 1.0000 | ROC-AUC: 1.0000\nGradient boosting captures subtle non-linear edge boundaries."),
+        ("3. Support Vector Machine (RBF)", "Accuracy: 100.0% | Macro F1: 1.0000 | ROC-AUC: 1.0000\nEffective hyper-plane margin separation across scaled features."),
+        ("4. MLP Deep Neural Network", "Accuracy: 99.9% | Macro F1: 0.9987 | ROC-AUC: 1.0000\nHigh representation power, slight convergence sensitivity."),
+        ("5. Logistic Regression Baseline", "Accuracy: 100.0% | Macro F1: 1.0000 | ROC-AUC: 1.0000\nLinear separation baseline confirms feature quality.")
     ]
     for r_t, r_d in results_text:
         p_t = tf5_l.add_paragraph()
@@ -306,7 +306,7 @@ def create_pptx(output_path: str = "outputs/presentation.pptx"):
     ]
     for c_t, c_d in conclusions:
         p_t = tf6_l.add_paragraph()
-        p_t.text = f"✔ {c_t}:"
+        p_t.text = f"- {c_t}:"
         p_t.font.bold = True
         p_t.font.size = Pt(12)
         p_t.font.color.rgb = C_DARK
@@ -333,7 +333,7 @@ def create_pptx(output_path: str = "outputs/presentation.pptx"):
     ]
     for f_t, f_d in future_pts:
         p_t = tf6_r.add_paragraph()
-        p_t.text = f"🚀 {f_t}:"
+        p_t.text = f"- {f_t}:"
         p_t.font.bold = True
         p_t.font.size = Pt(12)
         p_t.font.color.rgb = C_DARK
