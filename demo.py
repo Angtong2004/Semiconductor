@@ -1,3 +1,4 @@
+#!/home/insane/Angtong/.venv/bin/python
 """
 demo.py - Lightweight Live Teacher Demo
 Run this script during your presentation:
