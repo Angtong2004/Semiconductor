@@ -1,0 +1,168 @@
+================================================================================
+PROJECT PRESENTATION GUIDE: HOW MY ML MODEL WORKS
+Project: Machine Learning-Based Defect Classification Using Simulated Metrology Data
+Context: Semiconductor Fabrication & Characterization (CeNSE, IISc)
+================================================================================
+
+This guide gives you an exact, step-by-step script and technical explanation
+to speak to your teacher. Read through this before your presentation.
+
+
+--------------------------------------------------------------------------------
+1. OPENING STATEMENT (FIRST 30 SECONDS)
+--------------------------------------------------------------------------------
+Say this to your teacher:
+
+"Sir/Ma'am, during my internship on semiconductor fabrication and characterization
+at CeNSE, IISc, I saw that after fab steps like thin-film deposition, lithography,
+and plasma etching, inspecting wafers manually using cross-sectional SEM is too
+slow and destructive.
+
+In this project, I built a Machine Learning system that uses non-destructive,
+in-line metrology data (from Ellipsometry, AFM, and Four-Point Probes) to
+automatically classify which fabrication process failed and why.
+
+Let me walk you through how the metrology data is structured and how the machine
+learning model actually makes its predictions."
+
+
+--------------------------------------------------------------------------------
+2. HOW THE METROLOGY DATA IS STRUCTURED
+--------------------------------------------------------------------------------
+Explain the physical parameters:
+
+"Instead of simple random numbers, each sample represents an individual die
+on a 300 mm silicon wafer with measurements from 4 standard cleanroom tools:
+
+1. Spectroscopic Ellipsometry / Reflectometry:
+   - Measures film thickness (t), refractive index (n at 633 nm), and optical
+     phase delta.
+   - For example, if target oxide thickness is 100 nm, an under-etched die
+     shows 125 nm, while an over-etched die drops to 55 nm.
+
+2. Atomic Force Microscopy (AFM) Surface Topography:
+   - Measures average roughness (Ra), peak-to-valley height (Rz), and surface
+     skewness (Ssk).
+   - This is critical: positive skewness means upward spikes (dust/particles),
+     while negative skewness means downward trenches or pits (scratches/etch damage).
+
+3. Four-Point Probe & C-V Electrical Metrology:
+   - Measures sheet resistance (Rs), gate breakdown field (Ebd), and dielectric
+     leakage current.
+   - Catches electrical shorts or thinned dielectric barriers.
+
+4. CD-SEM & Defect Inspection:
+   - Measures Critical Dimension deviation (CD bias) and defect aspect ratio."
+
+
+--------------------------------------------------------------------------------
+3. HOW THE MACHINE LEARNING MODEL WORKS (STEP-BY-STEP)
+--------------------------------------------------------------------------------
+Explain this technical flow:
+
+Step 1: Domain Feature Engineering
+"Before passing raw values into the model, I engineered 4 domain physics ratios:
+ - UV-to-Visible Reflectance Ratio: tracks dielectric absorption changes.
+ - AFM Peak-to-Roughness Aspect (Rz / Ra): distinguishes isolated sharp dust
+   spikes from general surface roughness.
+ - Dielectric Reliability Index (Breakdown field / Leakage current).
+ - Thickness-to-CD Coupling: correlates lithography CD changes with etch depth."
+
+Step 2: Preprocessing and Scaling
+"I used RobustScaler rather than standard z-score normalization. This is because
+cleanroom metrology features like particulate heights and leakage currents have
+extreme heavy tails and outliers. RobustScaler uses median and interquartile range
+(IQR), so outlier spikes do not distort the feature distribution.
+Crucially, the scaler was fitted strictly on the training set to prevent data leakage."
+
+Step 3: The Model Architecture (Random Forest Classifier)
+"The champion model is a Random Forest with 150 decision trees.
+Here is how it works under the hood:
+ - Each tree is trained on a random bootstrap sample of the dies.
+ - At each split node, the tree evaluates a random subset of metrology features
+   and finds the threshold that maximizes information gain (minimizes Gini impurity).
+ - For example, one tree might first split on 'film_thickness < 80 nm' to isolate
+   over-etching, then split on 'surface_skewness < -1.5' to confirm CMP scratches.
+ - When classifying an unknown die, all 150 trees vote. The class with the highest
+   fraction of votes becomes the prediction, and that fraction gives us the
+   confidence score (e.g., 96% confidence)."
+
+Step 4: Handling Class Imbalance
+"In real cleanrooms, 60% to 70% of dies pass specification, while defects are rare.
+To mirror this, my dataset has a 64% nominal pass rate. I addressed this by setting
+'class_weight=balanced' in the model, penalizing errors on rare defect classes
+more heavily so the model does not ignore them."
+
+
+--------------------------------------------------------------------------------
+4. LIVE DEMO WALKTHROUGH (WHAT TO POINT OUT WHEN RUNNING './run_demo.sh')
+--------------------------------------------------------------------------------
+Run './run_demo.sh' in your terminal and explain the cases:
+
+Case 1: Nominal Golden Die
+- "Here, thickness is 100.4 nm (near 100 nm target), AFM roughness Rz is only
+  1.5 nm, and sheet resistance is 25.1 Ohm/sq.
+- The model outputs Nominal_Pass with 100% confidence."
+
+Case 2: Particulate Contamination (Cleanroom Dust)
+- "Notice that film thickness is close to normal (105 nm), but the AFM peak-to-
+  valley height Rz jumped from 1.5 nm to 42.0 nm, and skewness is +2.65.
+- The model identifies this as Particulate_Contamination with over 90% confidence,
+  telling the fab engineer that cleanroom air filtration or chamber flaking is
+  the root cause."
+
+Case 3: RIE Over-Etch Excursion
+- "Here, film thickness dropped from 100 nm to 58.2 nm, and CD bias is negative
+  (-7.2 nm) because plasma over-etched the feature width.
+- The model identifies Over_Etch with 97.9% confidence."
+
+Case 4: CMP Microscratch
+- "Here, thickness is slightly low, but surface skewness is strongly negative
+  (-2.15) with an elongated aspect ratio of 8.5. This is the exact signature
+  of a polishing slurry scratch dragging across the wafer.
+- The model identifies CMP_Microscratch_Void with 86.8% confidence."
+
+
+--------------------------------------------------------------------------------
+5. LIKELY QUESTIONS YOUR TEACHER WILL ASK & EXACT ANSWERS
+--------------------------------------------------------------------------------
+
+Q1: "Why use Machine Learning? Why not just write simple IF-ELSE thresholds?"
+Answer:
+"Simple thresholds fail when defects overlap or multiple parameters drift
+simultaneously. For instance, both an over-etched die and a CMP scratch have
+reduced film thickness. A simple IF statement on thickness cannot tell them
+apart. The ML model learns the multi-dimensional correlation: thickness + AFM
+skewness + electrical breakdown. It detects non-linear boundaries that manual
+rules miss."
+
+Q2: "Why did you choose Random Forest instead of a Deep Neural Network?"
+Answer:
+"First, tabular metrology data with physical features is well-known in literature
+to perform best with tree ensembles like Random Forest and XGBoost.
+Second, Random Forest gives complete feature explainability (Mean Decrease in
+Impurity), showing exactly which tool contributed most to the decision.
+Third, it trains in under 2 seconds and evaluates a die in under 2 milliseconds,
+making it fast enough to sit directly on an in-line tool controller in the fab."
+
+Q3: "How do you know the model didn't just overfit?"
+Answer:
+"I split the data into 65% training, 15% validation, and 20% held-out test set
+using stratified sampling to preserve class ratios. The preprocessor was fitted
+only on the training split. I tested Random Forest, XGBoost, Support Vector
+Machines, and an MLP Neural Network, and verified generalization on the held-out
+test set using Balanced Accuracy and Macro F1 score."
+
+Q4: "What metrology parameter turned out to be the most important?"
+Answer:
+"According to the feature importance analysis:
+ 1. Film thickness (10.0%) from Ellipsometry, which separates deposition and
+    etching excursions.
+ 2. Optical phase delta (8.3%), which confirms thin-film path length.
+ 3. AFM surface skewness (7.7%), which separates protrusion spikes from scratch
+    grooves.
+ 4. Sheet resistance (7.5%), which confirms conductive layer continuity."
+
+================================================================================
+END OF GUIDE
+================================================================================
